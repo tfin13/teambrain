@@ -9,7 +9,8 @@ We are building the **Smallest MVP** only: one weekend, one developer.
 - PostgreSQL 17 via Docker locally, Neon in production
 - Drizzle ORM (`lib/db/schema.ts`), migrations in `lib/db/migrations`
 - Retrieval = Postgres full-text search only (generated `tsv` column + GIN index). No embeddings, no pgvector.
-- Coming later: Auth.js Credentials (step 2), Claude via Vercel AI SDK (step 7)
+- Auth.js v5 Credentials + bcryptjs, JWT sessions. `lib/auth/config.ts` is edge-safe (used by `middleware.ts`); `lib/auth/index.ts` adds the DB-backed provider. Get the user with `requireUser()`.
+- Coming later: Claude via Vercel AI SDK (step 7)
 
 ## Commands
 - `npm run db:up` / `npm run db:down`: start / stop local Postgres

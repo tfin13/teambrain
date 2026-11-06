@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Brain, FileText, MessageSquare, Search } from "lucide-react";
+import { Brain, FileText, LogOut, MessageSquare, Search } from "lucide-react";
+import { logout } from "@/lib/actions/auth";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const nav = [
@@ -11,7 +13,7 @@ const nav = [
   { href: "/chat", label: "Chat", icon: MessageSquare },
 ];
 
-export function AppSidebar() {
+export function AppSidebar({ email }: { email: string }) {
   const pathname = usePathname();
 
   return (
@@ -44,7 +46,17 @@ export function AppSidebar() {
         })}
       </nav>
 
-      {/* Step 2: user menu + sign out goes here */}
+      <div className="flex items-center justify-between gap-2 border-t px-4 py-3 md:mt-auto">
+        <span className="truncate text-sm text-muted-foreground" title={email}>
+          {email}
+        </span>
+        <form action={logout}>
+          <Button type="submit" variant="ghost" size="sm">
+            <LogOut className="size-4" />
+            Sign out
+          </Button>
+        </form>
+      </div>
     </aside>
   );
 }
