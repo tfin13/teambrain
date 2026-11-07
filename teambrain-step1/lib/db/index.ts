@@ -16,6 +16,8 @@ const client =
     max: 10,
     // Needed for poolers like Neon's pgbouncer endpoint in production.
     prepare: false,
+    // Silence informational NOTICEs (e.g. a search for only stop words like "the").
+    onnotice: () => {},
   });
 
 if (process.env.NODE_ENV !== "production") globalForDb.pgClient = client;
