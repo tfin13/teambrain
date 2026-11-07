@@ -8,6 +8,10 @@ const root = path.resolve(__dirname);
 const nextConfig: NextConfig = {
   outputFileTracingRoot: root,
   turbopack: { root },
+  experimental: {
+    // Server Actions default to a 1 MB body; uploads are capped at 5 MB, plus multipart overhead.
+    serverActions: { bodySizeLimit: "6mb" },
+  },
 };
 
 export default nextConfig;
