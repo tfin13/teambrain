@@ -8,6 +8,10 @@ import { hashPassword, normalizeEmail, validateNewCredentials } from "@/lib/auth
 
 export type AuthFormState = { error: string; email: string } | undefined;
 
+export async function githubLogin(formData: FormData) {
+  await signIn("github", { redirectTo: safeRedirect(formData.get("callbackUrl")) });
+}
+
 export async function login(_prev: AuthFormState, formData: FormData): Promise<AuthFormState> {
   const email = normalizeEmail(String(formData.get("email") ?? ""));
   const password = String(formData.get("password") ?? "");

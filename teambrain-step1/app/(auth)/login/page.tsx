@@ -9,5 +9,13 @@ export default async function LoginPage({
   searchParams: Promise<{ callbackUrl?: string | string[] }>;
 }) {
   const { callbackUrl } = await searchParams;
-  return <AuthForm mode="login" callbackUrl={typeof callbackUrl === "string" ? callbackUrl : undefined} />;
+  const githubEnabled = Boolean(process.env.GITHUB_ID && process.env.GITHUB_SECRET);
+
+  return (
+    <AuthForm
+      mode="login"
+      callbackUrl={typeof callbackUrl === "string" ? callbackUrl : undefined}
+      githubEnabled={githubEnabled}
+    />
+  );
 }
