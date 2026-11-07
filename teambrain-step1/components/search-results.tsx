@@ -1,25 +1,7 @@
 import { FileText } from "lucide-react";
+import { Snippet } from "@/components/snippet";
 import { Card, CardContent } from "@/components/ui/card";
-import { HIGHLIGHT_END, HIGHLIGHT_START, type SearchResult } from "@/lib/retrieval/search";
-
-// Turn the snippet's highlight markers into <mark> elements. Text is rendered by React,
-// never as HTML, so document content can't inject markup.
-function Snippet({ text }: { text: string }) {
-  const parts = text.split(new RegExp(`(${HIGHLIGHT_START}[^${HIGHLIGHT_END}]*${HIGHLIGHT_END})`));
-  return (
-    <p className="text-sm leading-relaxed text-muted-foreground">
-      {parts.map((part, i) =>
-        part.startsWith(HIGHLIGHT_START) ? (
-          <mark key={i} className="rounded-sm bg-primary/15 px-0.5 font-medium text-foreground">
-            {part.slice(1, -1)}
-          </mark>
-        ) : (
-          part
-        ),
-      )}
-    </p>
-  );
-}
+import type { SearchResult } from "@/lib/retrieval/search";
 
 export function SearchResults({ results }: { results: SearchResult[] }) {
   return (

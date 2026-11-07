@@ -1,11 +1,7 @@
 import { and, desc, eq, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { chunks, documents } from "@/lib/db/schema";
-
-// ts_headline wraps matches in these. Control characters can't collide with real
-// document text the way HTML tags could, and the UI turns them into <mark> safely.
-export const HIGHLIGHT_START = "\u0001";
-export const HIGHLIGHT_END = "\u0002";
+import { HIGHLIGHT_END, HIGHLIGHT_START } from "./highlight";
 
 export const MAX_QUERY_LENGTH = 200;
 
@@ -19,16 +15,33 @@ export type SearchResult = {
   rank: number;
 };
 
+export type SearchOptions = {
+  limit?: number;
+  /**
+   * "all" (Search page): every word must appear; supports "phrases", -exclusions, OR.
+   * "any" (chat retrieval): a chunk matching any word qualifies, and ts_rank puts chunks
+   * matching more words first. A natural-language question rarely has all its words in one chunk.
+   */
+  match?: "all" | "any";
+};
+
 /**
  * Keyword search over one user's chunks with Postgres full-text search.
- * websearch_to_tsquery accepts what people type: plain words, "quoted phrases", -exclusions, OR.
  * userId must come from the session.
  */
-export async function searchChunks(userId: string, rawQuery: string, limit = 20): Promise<SearchResult[]> {
+export async function searchChunks(
+  userId: string,
+  rawQuery: string,
+  { limit = 20, match = "all" }: SearchOptions = {},
+): Promise<SearchResult[]> {
   const q = rawQuery.trim().slice(0, MAX_QUERY_LENGTH);
   if (!q) return [];
 
-  const query = sql`websearch_to_tsquery('english', ${q})`;
+  // plainto_tsquery stems and drops stop words, producing 'a' & 'b'; swapping & for | makes it match-any.
+  const query =
+    match === "all"
+      ? sql`websearch_to_tsquery('english', ${q})`
+      : sql`replace(plainto_tsquery('english', ${q})::text, '&', '|')::tsquery`;
   const rank = sql<number>`ts_rank(${chunks.tsv}, ${query})`;
   const headlineOptions = `StartSel=${HIGHLIGHT_START}, StopSel=${HIGHLIGHT_END}, MaxWords=40, MinWords=20, MaxFragments=2, FragmentDelimiter=" … "`;
 

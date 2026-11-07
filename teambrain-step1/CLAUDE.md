@@ -10,7 +10,7 @@ We are building the **Smallest MVP** only: one weekend, one developer.
 - Drizzle ORM (`lib/db/schema.ts`), migrations in `lib/db/migrations`
 - Retrieval = Postgres full-text search only (generated `tsv` column + GIN index). No embeddings, no pgvector.
 - Auth.js v5 Credentials + bcryptjs, JWT sessions. `lib/auth/config.ts` is edge-safe (used by `middleware.ts`); `lib/auth/index.ts` adds the DB-backed provider. Get the user with `requireUser()`.
-- Coming later: Claude via Vercel AI SDK (step 7)
+- Chat: official Anthropic SDK (`@anthropic-ai/sdk`), model `claude-opus-5-5`, in `lib/ai`. `/api/chat` streams NDJSON events. Retrieval for chat uses `searchChunks(..., { match: "any" })`.
 
 ## Commands
 - `npm run db:up` / `npm run db:down`: start / stop local Postgres
